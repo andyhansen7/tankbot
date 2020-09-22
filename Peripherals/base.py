@@ -2,70 +2,52 @@ import time
 from adafruit_motor import stepper
 from adafruit_motorkit import MotorKit
 
-class Base(self, parent):
-    def __init__(self, parent):
-        _parent = parent
-        kit = MotorKit(i2c=board.I2C())
+class Base():
+    def __init__(self):
         
-        kit.stepper1.release()
-        kit.stepper2.release()
+        # Motor setup
+        self.kit = MotorKit()
+        self.left_motor = self.kit.stepper1
+        self.right_motor = self.kit.stepper2
         
-    def MoveLeft(self, direction, steps, style):
+        
+        self.left_motor.release()
+        self.right_motor.release()
+    
         # Direction:
         # -1: Reverse
         #  1: Forward
+        
+        self.direction_switch = {
+            -1: stepper.FORWARD,
+            1: stepper.BACKWARD
+        }
         
         # Style:
         # 0: Single coil steps
         # 1: Double coil steps
         # 2: Interleaved steps
         # 3: Micro steps
-        
+            
         # Returns true on sucess, false on error
-        
-        direction_switch = {
-            -1: stepper.FORWARD,
-             1: stepper.REVERSE
-        }
-        
-        style_switch = {
+            
+        self.style_switch = {
             0: stepper.SINGLE,
             1: stepper.DOUBLE,
             2: stepper.INTERLEAVE,
             3: stepper.MICROSTEP
         }
         
+    def MoveLeft(self, direction, steps, style):
         for i in steps:
-            kit.stepper1.onestep(direction = direction_switch.get(direction, stepper.SINGLE), style = style_switch(style, stepper.FORWARD))
+            self.left_motor.onestep(direction = self.direction_switch.get(direction, stepper.SINGLE), style = self.style_switch.get(style, stepper.FORWARD))
             
-        def MoveRight(self, direction, steps, style):
-            # Direction:
-            # -1: Reverse
-            #  1: Forward
-            
-            # Style:
-            # 0: Single coil steps
-            # 1: Double coil steps
-            # 2: Interleaved steps
-            # 3: Micro steps
-            
-            direction_switch = {
-                -1: stepper.FORWARD,
-                1: stepper.REVERSE
-            }
-            
-            style_switch = {
-                0: stepper.SINGLE,
-                1: stepper.DOUBLE,
-                2: stepper.INTERLEAVE,
-                3: stepper.MICROSTEP
-            }
-            
-            for i in steps:
-                kit.stepper2.onestep(direction = direction_switch.get(direction, stepper.SINGLE), style = style_switch(style, stepper.FORWARD))
+    def MoveRight(self, direction, steps, style):
+        for i in steps:
+            self.right_motor.onestep(direction = self.direction_switch.get(direction, stepper.SINGLE), style = self.style_switch.get(style, stepper.FORWARD))
                 
-        def ReleaseLeft(self):
-            kit.stepper1.release()
+    def ReleaseLeft(self):
+        self.left_motor.release()
             
-        def ReleaseRight(self):
-            kit.stepper2.release()
+    def ReleaseRight(self):
+        self.right_motor.release()
